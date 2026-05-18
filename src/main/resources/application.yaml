@@ -1,0 +1,18 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: fin
+
+
+  mongodb:
+    uri: mongodb://localhost:27017/finpulse
+
+logging:
+  level:
+    root: INFO
+
+jwt:
+  secret: //use a secure secret in production
+  expiration: 3600000
