@@ -1,17 +1,28 @@
 package com.finpulse.fin.config;
 
+import com.finpulse.fin.security.JwtAuthenticationFilter;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import org.springframework.security.web.SecurityFilterChain;
+
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -21,31 +32,44 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(
-            HttpSecurity http) throws Exception {
+            HttpSecurity http
+    ) throws Exception {
 
         http
 
-                // DISABLE CSRF as it was giving 403 forbidden error on POSTMAN its dfferent from 401 
-                // 401 is for unauthorized access and 403 is for forbidden access which means you are authenticated but not authorized to access the resource
+                // Disable CSRF as we are not using cookies for session management and we are using JWT token for authentication and authorization
                 .csrf(csrf -> csrf.disable())
 
-                // AUTHORIZATION RULES
+                // Stateless session management as we dont want to store any session information on the server side as we are using JWT token for authentication and authorization
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(
+                                SessionCreationPolicy.STATELESS
+                        )
+                )
+
+                // Authorization rules
                 .authorizeHttpRequests(auth -> auth
 
-                        // PUBLIC AUTH APIs
+                        // Public auth APIs
                         .requestMatchers("/api/auth/**")
                         .permitAll()
 
-                        // OTHER APIS REQUIRE AUTH
+                        // All other APIs protected
                         .anyRequest()
                         .authenticated()
                 )
 
-                // DISABLE DEFAULT LOGIN PAGE
+                // Disable form login
                 .formLogin(form -> form.disable())
 
-                // DISABLE HTTP BASIC
-                .httpBasic(Customizer.withDefaults());
+                // Disable HTTP basic auth as we dont want username and password to flow every time in the request header instead we will use JWT token for authentication and authorization
+                .httpBasic(Customizer.withDefaults())
+
+                // Add JWT filter
+                .addFilterBefore(
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }
