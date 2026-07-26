@@ -10,13 +10,8 @@ This project is a real-world backend microservices learning journey using:
 * Redis
 * JWT Authentication
 * Spring Security
-* Docker
-* Kubernetes
 * Logging & Monitoring
 
-The goal is to learn industry-level backend engineering step by step.
-
----
 
 # 1. What Is Backend Development?
 
