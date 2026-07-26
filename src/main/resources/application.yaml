@@ -12,7 +12,8 @@ spring:
 logging:
   level:
     root: INFO
+    springframework.security: DEBUG
 
 jwt:
-  secret: //use a secure secret in production
+  secret: okthisismysecretiwilluseeverytime14    //use a secure secret in production
   expiration: 3600000

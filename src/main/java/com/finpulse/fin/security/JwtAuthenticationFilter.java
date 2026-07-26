@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String userEmail;
 
-        // No token present some api might be public, so just continue filter chain
+        // No token present some api might be public, so just continue filter chain so that the request can be processed by the next filter or the target resource
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
 
             filterChain.doFilter(request, response);
@@ -71,7 +71,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
-    // Continue with the filter chain to allow the request to proceed to the next filter or the target resource
+    // Continue with the filter chain to allow the request to proceed to the next filter or the target resource so that the request can be processed by the next filter or the target resource
         filterChain.doFilter(request, response);
     }
 }
